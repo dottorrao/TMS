@@ -1,5 +1,5 @@
 
-//========= IMPORT LIBRARY =========
+//========= IMPORT LIBRARY ========= 
 #include <ESP8266WiFi.h>
 #include <DHT.h>
 #include <Adafruit_GFX.h>
