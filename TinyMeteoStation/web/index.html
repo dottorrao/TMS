@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html>
+	
+    <head>
+        <title>TMS Project</title>
+        
+        <style type="text/css">
+                                                                        
+            #chart-container {
+                width: 500px;
+                height: auto;
+            }
+                
+            #table {
+                display: table;
+                border: 1px solid black;
+            }
+
+            #row  {
+                display: table-row;
+                border: 1px solid black;
+            }
+
+            #cell {
+                width: 500px;
+                height: auto;
+                display: table-cell;
+                border: 1px solid black;
+            }
+            
+            .cellYellow {
+                width: 500px;
+                height: auto;
+                display: table-cell;
+                border: 1px solid black;
+                background-color: #F6F2B9;
+            }
+            
+            .cellTextGreen {
+                vertical-align: top;
+                width: 500px;
+                height: auto;
+                display: table-cell;
+                border: 1px solid black;
+                font-family: Arial;
+                padding: 10px;
+                background-color: #b4eeb4;
+            }
+            
+            .cellTextOrange {
+                vertical-align: top;
+                width: 500px;
+                height: auto;
+                display: table-cell;
+                border: 1px solid black;
+                font-family: Arial;
+                font-size: 12px;
+                padding: 10px;
+                background-color: #F59797;
+            }
+            
+            .cellTexWhite {
+                vertical-align: top;
+                width: 500px;
+                height: auto;
+                display: table-cell;
+                border: 1px solid black;
+                font-family: Arial;
+                font-size: 12px;
+                padding: 10px;
+            }
+            
+            .divText {
+                font-family: Arial;
+                padding:10px;
+            }
+            
+            .iframeCenter {
+                display:block;
+                margin:0 auto;
+            }
+            
+            .imgFloatLeft{
+                float:left;
+                clear:left;
+                padding:5px;
+            }    
+            
+            a:link {
+                text-decoration: none;
+            }
+
+            a:visited {
+                text-decoration: none;
+            }
+
+             a:hover {
+                text-decoration: underline;
+             }
+
+             a:active {
+                text-decoration: underline;
+             }  
+              
+        </style>
+
+    </head>
+        
+    <body>
+        <div id="table"> 		
+            <div id="row"> 
+                <div class="cellTextGreen">
+                    <h1 align="center">Meteo Station</h1>
+                    <h2 align="center">Monitoraggio temperatura e umidita' in tempo reale</h2>
+                    <iframe class="iframeCenter" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2878.881717006317!2d11.037065366444859!3d43.92254135230279!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132af46869db2991%3A0x4499a4647bfca0ce!2sVia+Fratelli+Bandiera%2C+4%2C+59013+Montemurlo+PO!5e1!3m2!1sit!2sit!4v1514932226440" width="500" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
+                </div> 
+                <div class="cellYellow">                                     
+                    <div id="chart-container" style="width:100%;">
+                        <canvas id="mycanvasTemperature"></canvas>
+                    </div>                               
+                    <div id="chart-container" style="width:100%;">
+                        <canvas id="mycanvasHumidity"></canvas>
+                    </div>
+                    <div class="divText">
+                        <a href="temperature.html" target="#">Zoom temperatura</a> - <a href="humidity.html" target="#">Zoom Umidita'</a>
+                    </div>
+                </div>	                                 
+            </div>
+            <div id="row">
+                <div class="cellTextOrange">
+                     <a target="#" href="http://ibb.co/kd9xKw"><img class="imgFloatLeft" src="http://thumb.ibb.co/kd9xKw/Stazione.png" alt="Stazione" border="0" /></a>
+                     <B>La piccola stazione meteo qui di fianco (clicca sull'immagine per ingrandirla)
+                     e' composta da:</B><br><br>
+                     - <a target="#" href="https://www.amazon.it/gp/product/B01N9RXGHY/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1">Modulo WIFI AZDelivery D1 mini con NodeMCU ESP8266/ESP8266-12E/ESP12</a><br><br>
+                     - <a target="#" href="https://www.amazon.it/gp/product/B01L9GC470/ref=oh_aui_detailpage_o03_s00?ie=UTF8&psc=1">Modulo LCD AZDelivery OLED Display 128 x 64 Pixel 0,96 pollice</a><br><br>
+                     - <a target="#" href="https://www.amazon.it/gp/product/B01M2B7HQB/ref=oh_aui_detailpage_o03_s00?ie=UTF8&psc=1">Modulo AZDelivery Real Time Clock RTC DS3231 I2C</a><br><br> 
+                     - <a target="#" href="https://www.amazon.it/gp/product/B06XF4TNT9/ref=oh_aui_detailpage_o04_s00?ie=UTF8&psc=1">AZDelivery DHT 22 / AM2302 DHT22 Sensore per la misurazione di temperatura e umidita'</a><br><br>     
+                     - <a target="#" href="https://www.amazon.it/Basetta-Piastra-Sperimentale-Breadboard-Raspberry/dp/B06XWQ2K6N/ref=sr_1_1_sspa?s=electronics&ie=UTF8&qid=1515061282&sr=1-1-spons&keywords=breadboard&th=1">Standar breadboard</a><br><br>
+                     - Cavetti per connessioni
+                </div>
+                <div class="cellTexWhite">
+                     La stazione meteo e' formata assemblando le varie componenti ed e' programmata per acquisire i dati relativi a temeratura/umidita' dal sensore.<br>
+                     Ogni intervallo di tempo definito, attraverso il modulo WIFI, la stazione si connette al router di casa, i dati vengono postati on line e memorizzati su database.<br>
+                     E' quindi possibile visualizzare graficamente i dati ottenuti (per esempio utilizzando la libreria gratutia <a href="http://www.chartjs.org/">Chart.js</a>), 
+                     ottenendo i grafici qui riportati.
+                     <BR>
+                     <!---
+                     <center>Confronto con ilmeteo.it:</center><br>
+                     <div id="cont_cb2660275a213b626539a709811cb34c"><script type="text/javascript" async src="https://www.ilmeteo.net/wid_loader/cb2660275a213b626539a709811cb34c"></script></div>
+                     Inizio codice ilMeteo.it
+                     <iframe class="iframeCenter" width="200" height="123" scrolling="no" frameborder="no" noresize="noresize" src="http://www.ilmeteo.it/box/previsioni.php?citta=4392&type=real1&width=200&ico=1&lang=ita&days=6&font=Arial&fontsize=12&bg=FFFFFF&fg=000000&bgtitle=0099FF&fgtitle=FFFFFF&bgtab=F0F0F0&fglink=1773C2"></iframe>
+                     <!-- Fine codice ilMeteo.it -->
+                     Il sensore di temperatura/umidta' e' posizionato sul balcone della mia abitazione, quindi la temperatura rilevata
+                     e' influenzata dal riscaldamento delle abitazioni (circa 1/2 gradi in piu'). 
+                </div>
+            </div>
+        </div>
+
+        <!-- javascript -->
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/Chart.min.js"></script>
+        <script type="text/javascript" src="js/appHumid.js"></script>
+        <script type="text/javascript" src="js/appTemp.js"></script>
+    </body>    
+
+</html>
