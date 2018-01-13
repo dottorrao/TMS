@@ -19,7 +19,7 @@ int status = WL_IDLE_STATUS;
 
 //========= CONSTANT ===========================================
 #define OLED_RESET LED_BUILTIN    // 4 - for LCD
-#define OLED_RESET 0              // GPIO0 - for LCD
+//#define OLED_RESET D4           // GPIO0 - for LCD
 #define DHTPIN D5                 // what pin we're connected to - for temp sensor
 #define DHTTYPE DHT22             // DHT 22  (AM2302) - for temp sensor
 #define BUTTONPIN D6              // PIN for button A
@@ -39,7 +39,7 @@ float tempIn;   //Stores internal temperature value
 
 String data;  //To send to server for storing
 unsigned long previousMillis = 0;  // last time update
-long interval = 60*60*1000;        // interval at which to do something (milliseconds)
+long interval = 1*60*1000;        // interval at which to do something (milliseconds)
 int buttonState = LOW;             // variable for reading the pushbutton status
 
 void setup() {
@@ -89,10 +89,13 @@ void setup() {
   }
   Serial.println("");
   Serial.println("WiFi connected!");
+
+  display.setCursor(0,0);
+  display.clearDisplay();
   
   display.println("WiFi connected!");
   display.display();
-  delay(2000);
+  //delay(2000);
   
   // Start the server
   server.begin();
@@ -124,6 +127,7 @@ void loop() {
   unsigned long currentMillis = millis();
 
   //only after selected time the data will be sent to server
+  
   if(currentMillis - previousMillis > interval) {
     previousMillis = currentMillis; 
 
@@ -148,9 +152,9 @@ void loop() {
       client.stop();  // DISCONNECT FROM THE SERVER
     }
   }
-
-  buttonState = digitalRead(BUTTONPIN);
   
+  buttonState = digitalRead(BUTTONPIN);
+
   if (buttonState == 1) {
   
     display.clearDisplay();
@@ -165,12 +169,13 @@ void loop() {
     display.display();
        
   } else {
-    
+   
     display.clearDisplay();
     //display.display();
     display.setTextSize(1);
     display.setTextColor(WHITE);
     display.setCursor(0,0);
+
     time_t t = now();                  
     display.print (hour(t));
     display.print (":");
@@ -183,6 +188,7 @@ void loop() {
     display.println (year(t));
     //display.display();
     display.println("");
+    
     display.println(" -- External -- ");
     display.println("Tmp:" +  String(tempEx) + "C" );
     display.println("Hum:" + String(humEx)  + "%" );
