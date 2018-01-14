@@ -1,5 +1,5 @@
 
-//========= IMPORT LIBRARY ========= 
+//========= IMPORT LIBRARY =========
 #include <ESP8266WiFi.h>
 #include <DHT.h>
 #include <Adafruit_GFX.h>
@@ -39,7 +39,7 @@ float tempIn;   //Stores internal temperature value
 
 String data;  //To send to server for storing
 unsigned long previousMillis = 0;  // last time update
-long interval = 1*60*1000;        // interval at which to do something (milliseconds)
+long interval = 60*60*1000;        // interval at which to do something (milliseconds)
 int buttonState = LOW;             // variable for reading the pushbutton status
 
 void setup() {
