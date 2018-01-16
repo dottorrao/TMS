@@ -19,10 +19,10 @@ int status = WL_IDLE_STATUS;
 
 //========= CONSTANT ===========================================
 #define OLED_RESET LED_BUILTIN    // 4 - for LCD
-//#define OLED_RESET D4           // GPIO0 - for LCD
 #define DHTPIN D5                 // what pin we're connected to - for temp sensor
 #define DHTTYPE DHT22             // DHT 22  (AM2302) - for temp sensor
-#define BUTTONPIN D6              // PIN for button A
+//#define BUTTONPIN 0             // PIN for button A
+const int BUTTONPIN = 16;         // PIN for button A
 //===============================================================
 
 //========= DEFINE OBJECTS ======================================
@@ -40,7 +40,7 @@ float tempIn;   //Stores internal temperature value
 String data;  //To send to server for storing
 unsigned long previousMillis = 0;  // last time update
 long interval = 60*60*1000;        // interval at which to do something (milliseconds)
-int buttonState = LOW;             // variable for reading the pushbutton status
+int buttonState = 0;               // variable for reading the pushbutton status
 
 void setup() {
 
@@ -49,6 +49,7 @@ void setup() {
   
   // inizialize button pin
   pinMode(BUTTONPIN, INPUT);
+  //digitalWrite(BUTTONPIN, LOW);
   
   // initialize serial:
   Serial.begin(115200);
@@ -65,21 +66,24 @@ void setup() {
   
   display.clearDisplay();
   display.setCursor(0,0);
-  display.println("*TINY METEO STATION*");
-  display.println("       PROJECT      ");
-  display.println("    WELCOME FOLKS!  ");
+  display.println("* STAZIONE METEO  * ");
+  display.println("       AVVIO        ");
+  display.println("    DISPOSITIVO     ");
   display.println("");
-  display.print("Funnytech.atwebpages.com");
+  display.println("* * * * * * * * * * ");
   display.display();
+  delay(5000);
   
   display.clearDisplay();
   display.setCursor(0,0);
-  Serial.println("Attempting to connect to WPA network...");
+  Serial.println("Attempting to connect to WPA network: ");
   Serial.print(" ");
   Serial.println(ssid);
-  display.println("Attempting to connect to WPA network...");
+  display.println("Attempting to connect to WPA network: ");
+  display.println("");
   display.println(ssid);
   display.display();
+  delay(2000);
  
   WiFi.begin(ssid, pass);
    
@@ -90,29 +94,35 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected!");
 
-  display.setCursor(0,0);
-  display.clearDisplay();
+  //display.setCursor(0,0);
+  //display.clearDisplay();
   
+  display.println("");
   display.println("WiFi connected!");
   display.display();
-  //delay(2000);
+  delay(4000);
   
   // Start the server
   server.begin();
+  display.setCursor(0,0);
   display.clearDisplay();
   Serial.println("Server started!");
   display.println("Server started!");
+  display.println("");
   // Print the IP address
   Serial.print("Use this URL to connect: ");
   Serial.print("http://");
   Serial.print(WiFi.localIP());
   Serial.println("/");
+  display.println("");
   display.println("Connected to SSID: ");
   display.println(ssid);
+  display.println("");
   display.print("With id:");
   display.println(WiFi.localIP());
   //display the STARTUP information
   display.display();
+  delay(4000);
 }
 
 void loop() {
@@ -154,8 +164,10 @@ void loop() {
   }
   
   buttonState = digitalRead(BUTTONPIN);
+  delay(100);
+  Serial.println(buttonState);
 
-  if (buttonState == 1) {
+  if (buttonState == LOW) {
   
     display.clearDisplay();
     display.setCursor(0,0);
@@ -163,7 +175,7 @@ void loop() {
     display.print ("IP: ");
     display.println (WiFi.localIP());
     display.print ("Next upload: ");
-    display.println ((interval-(currentMillis-previousMillis))/1000)/60;
+    display.println (((interval-(currentMillis-previousMillis))/1000)/60)/60;
     display.println("");
     display.println("http://funnytech.atwebpages.com for data!");
     display.display();
