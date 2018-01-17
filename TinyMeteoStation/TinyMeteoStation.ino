@@ -164,20 +164,21 @@ void loop() {
   }
   
   buttonState = digitalRead(BUTTONPIN);
-  delay(100);
-  Serial.println(buttonState);
 
-  if (buttonState == LOW) {
+  if (buttonState == HIGH) {
   
     display.clearDisplay();
     display.setCursor(0,0);
     display.setTextSize(1);
     display.print ("IP: ");
     display.println (WiFi.localIP());
-    display.print ("Next upload: ");
-    display.println (((interval-(currentMillis-previousMillis))/1000)/60)/60;
     display.println("");
-    display.println("http://funnytech.atwebpages.com for data!");
+    display.print ("Next upload: ");
+    display.print (((interval-(currentMillis-previousMillis))/1000)/60)/60;
+    display.print (" mins");
+    display.println("");
+    display.println("");
+    display.println("http://funnytech.atwebpages.com/tms/ for live data!");
     display.display();
        
   } else {
