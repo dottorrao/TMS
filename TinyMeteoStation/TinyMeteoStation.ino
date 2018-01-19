@@ -21,8 +21,8 @@ int status = WL_IDLE_STATUS;
 #define OLED_RESET LED_BUILTIN    // 4 - for LCD
 #define DHTPIN D5                 // what pin we're connected to - for temp sensor
 #define DHTTYPE DHT22             // DHT 22  (AM2302) - for temp sensor
-//#define BUTTONPIN 0             // PIN for button A
-const int BUTTONPIN = 16;         // PIN for button A
+const int BUTTONPINA = 16;        // PIN for button A
+const int BUTTONPINB = 0;         // PIN for button B
 //===============================================================
 
 //========= DEFINE OBJECTS ======================================
@@ -40,7 +40,8 @@ float tempIn;   //Stores internal temperature value
 String data;  //To send to server for storing
 unsigned long previousMillis = 0;  // last time update
 long interval = 60*60*1000;        // interval at which to do something (milliseconds)
-int buttonState = 0;               // variable for reading the pushbutton status
+int buttonStateA = 0;              // variable for reading the pushbutton A status 
+int buttonStateB = 0;              // variable for reading the pushbutton B status
 
 void setup() {
 
@@ -48,12 +49,12 @@ void setup() {
   setSyncProvider(RTC.get);
   
   // inizialize button pin
-  pinMode(BUTTONPIN, INPUT);
-  //digitalWrite(BUTTONPIN, LOW);
+  pinMode(BUTTONPINA, INPUT);
+  pinMode(BUTTONPINB, INPUT);
   
   // initialize serial:
   Serial.begin(115200);
-  delay(10);
+  //delay(10);
   
   // initialize display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -163,9 +164,41 @@ void loop() {
     }
   }
   
-  buttonState = digitalRead(BUTTONPIN);
+  buttonStateA = digitalRead(BUTTONPINA);
+  buttonStateB = digitalRead(BUTTONPINB);
 
-  if (buttonState == HIGH) {
+  Serial.println(buttonStateA);
+  Serial.println(buttonStateB);
+
+  if (buttonStateB == HIGH) {
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.println ("Sending data online...");
+    display.display();
+   
+    data = "temp1=" + String(tempEx) + "&hum1=" + String(humEx);
+    Serial.println("Sending data to server: " + String(data) );
+    Serial.println ( "Server connection: " + String (client.connect("funnytech.atwebpages.com",80)) );
+
+    if (client.connect("funnytech.atwebpages.com",80)) { // REPLACE WITH YOUR SERVER ADDRESS
+      Serial.println("Data sending...");
+      client.println("POST /tms/add.php HTTP/1.1"); 
+      client.println("Host: funnytech.atwebpages.com"); // SERVER ADDRESS HERE TOO
+      client.println("Content-Type: application/x-www-form-urlencoded"); 
+      client.print("Content-Length: "); 
+      client.println(data.length()); 
+      client.println(); 
+      client.print(data); 
+      Serial.println("Data sent...");
+      delay(2000);
+      display.println ("");
+      display.println ("...Data sent!");;
+      display.display();
+      delay(2000);
+    }
+  }
+  
+  if (buttonStateA == HIGH) {
   
     display.clearDisplay();
     display.setCursor(0,0);
