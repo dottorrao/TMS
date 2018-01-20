@@ -15,6 +15,7 @@
 const char* ssid = "Ruggeri-Senesi WIFI 2.4";//type your ssid
 const char* pass = "12MaMaLoreChia12";//type your password
 int status = WL_IDLE_STATUS;
+int uploadInterval = 0;
 //================================== 
 
 //========= CONSTANT ===========================================
@@ -39,7 +40,7 @@ float tempIn;   //Stores internal temperature value
 
 String data;  //To send to server for storing
 unsigned long previousMillis = 0;  // last time update
-long interval = 60*60*1000;        // interval at which to do something (milliseconds)
+long interval = 0;                 // interval at which to do something (milliseconds)
 int buttonStateA = 0;              // variable for reading the pushbutton A status 
 int buttonStateB = 0;              // variable for reading the pushbutton B status
 
@@ -67,10 +68,12 @@ void setup() {
   
   display.clearDisplay();
   display.setCursor(0,0);
-  display.println("* STAZIONE METEO  * ");
-  display.println("       AVVIO        ");
-  display.println("    DISPOSITIVO     ");
-  display.println("");
+  display.println("* * * * * * * * * * ");
+  display.println("*  METEO STATION  * ");
+  display.println("     STARTING       ");
+  display.println("      DEVICE        ");
+  display.println("        **          ");
+  display.println("* * * * * * * * * * ");
   display.println("* * * * * * * * * * ");
   display.display();
   delay(5000);
@@ -138,6 +141,9 @@ void loop() {
   unsigned long currentMillis = millis();
 
   //only after selected time the data will be sent to server
+
+  uploadInterval = map( analogRead( 0 ),0,1023,0,60 );
+  interval = uploadInterval*60*1000;
   
   if(currentMillis - previousMillis > interval) {
     previousMillis = currentMillis; 
@@ -169,7 +175,10 @@ void loop() {
 
   Serial.println(buttonStateA);
   Serial.println(buttonStateB);
+  Serial.println(uploadInterval);
+  
 
+  /*
   if (buttonStateB == HIGH) {
     display.clearDisplay();
     display.setCursor(0,0);
@@ -197,6 +206,7 @@ void loop() {
       delay(2000);
     }
   }
+  */
   
   if (buttonStateA == HIGH) {
   
@@ -238,9 +248,11 @@ void loop() {
     display.println(" -- External -- ");
     display.println("Tmp:" +  String(tempEx) + "C" );
     display.println("Hum:" + String(humEx)  + "%" );
-    display.println(" -- Internal -- ");
-    display.println("Tmp:" +  String(tempIn) + "C" );
-    display.println("Hum:" + String(humIn)  + "%" );
+    display.println("");
+    display.println("Upload inter:" + String(uploadInterval) + (" mins.") );
+    //display.println(" -- Internal -- ");
+    //display.println("Tmp:" +  String(tempIn) + "C" );
+    //display.println("Hum:" + String(humIn)  + "%" );
     display.display();
     //display.setTextSize(1);
   }
