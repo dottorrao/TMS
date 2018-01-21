@@ -68,13 +68,14 @@ void setup() {
   
   display.clearDisplay();
   display.setCursor(0,0);
-  display.println("* * * * * * * * * * ");
-  display.println("*  METEO STATION  * ");
-  display.println("     STARTING       ");
-  display.println("      DEVICE        ");
-  display.println("        **          ");
-  display.println("* * * * * * * * * * ");
-  display.println("* * * * * * * * * * ");
+  display.println("* * * * * * * * * *");
+  display.println("");
+  display.println("*  METEO STATION  *");
+  display.println("     STARTING      ");
+  display.println("      DEVICE       ");
+  display.println("        **         ");
+  display.println("/ / / / / / / / / /");
+  display.println("* * * * * * * * * *");
   display.display();
   delay(5000);
   
@@ -129,6 +130,28 @@ void setup() {
   delay(4000);
 }
 
+void uploadData(){
+  data = "temp1=" + String(tempEx) + "&hum1=" + String(humEx);
+  Serial.println("Sending data to server: " + String(data) );
+  Serial.println ( "Server connection: " + String (client.connect("funnytech.atwebpages.com",80)) );
+  if (client.connect("funnytech.atwebpages.com",80)) { // REPLACE WITH YOUR SERVER ADDRESS
+    Serial.println("Data sending...");
+    client.println("POST /tms/add.php HTTP/1.1"); 
+    client.println("Host: funnytech.atwebpages.com"); // SERVER ADDRESS HERE TOO
+    client.println("Content-Type: application/x-www-form-urlencoded"); 
+    client.print("Content-Length: "); 
+    client.println(data.length()); 
+    client.println(); 
+    client.print(data); 
+    Serial.println("Data sent...");
+  }
+  // client disconnection
+  if (client.connected()) { 
+    client.stop();  // DISCONNECT FROM THE SERVER
+  }
+}
+
+
 void loop() {
 
   //reading temperature and humidity from DHT (external)
@@ -147,27 +170,7 @@ void loop() {
   
   if(currentMillis - previousMillis > interval) {
     previousMillis = currentMillis; 
-
-    data = "temp1=" + String(tempEx) + "&hum1=" + String(humEx);
-    Serial.println("Sending data to server: " + String(data) );
-    Serial.println ( "Server connection: " + String (client.connect("funnytech.atwebpages.com",80)) );
-
-    if (client.connect("funnytech.atwebpages.com",80)) { // REPLACE WITH YOUR SERVER ADDRESS
-      Serial.println("Data sending...");
-      client.println("POST /tms/add.php HTTP/1.1"); 
-      client.println("Host: funnytech.atwebpages.com"); // SERVER ADDRESS HERE TOO
-      client.println("Content-Type: application/x-www-form-urlencoded"); 
-      client.print("Content-Length: "); 
-      client.println(data.length()); 
-      client.println(); 
-      client.print(data); 
-      Serial.println("Data sent...");
-    }
-
-    // client disconnection
-    if (client.connected()) { 
-      client.stop();  // DISCONNECT FROM THE SERVER
-    }
+    uploadData();
   }
   
   buttonStateA = digitalRead(BUTTONPINA);
@@ -177,51 +180,26 @@ void loop() {
   Serial.println(buttonStateB);
   Serial.println(uploadInterval);
   
-
-  /*
   if (buttonStateB == HIGH) {
     display.clearDisplay();
     display.setCursor(0,0);
     display.println ("Sending data online...");
     display.display();
-   
-    data = "temp1=" + String(tempEx) + "&hum1=" + String(humEx);
-    Serial.println("Sending data to server: " + String(data) );
-    Serial.println ( "Server connection: " + String (client.connect("funnytech.atwebpages.com",80)) );
-
-    if (client.connect("funnytech.atwebpages.com",80)) { // REPLACE WITH YOUR SERVER ADDRESS
-      Serial.println("Data sending...");
-      client.println("POST /tms/add.php HTTP/1.1"); 
-      client.println("Host: funnytech.atwebpages.com"); // SERVER ADDRESS HERE TOO
-      client.println("Content-Type: application/x-www-form-urlencoded"); 
-      client.print("Content-Length: "); 
-      client.println(data.length()); 
-      client.println(); 
-      client.print(data); 
-      Serial.println("Data sent...");
-      delay(2000);
-      display.println ("");
-      display.println ("...Data sent!");;
-      display.display();
-      delay(2000);
-    }
+    uploadData();
+    Serial.println("Data sent...");
+    delay(2000);
+    display.println ("");
+    display.println ("...Data sent!");;
+    display.display();
+    delay(2000);
   }
-  */
   
   if (buttonStateA == HIGH) {
-  
     display.clearDisplay();
     display.setCursor(0,0);
     display.setTextSize(1);
-    display.print ("IP: ");
+    display.print ("Device IP: ");
     display.println (WiFi.localIP());
-    display.println("");
-    display.print ("Next upload: ");
-    display.print (((interval-(currentMillis-previousMillis))/1000)/60)/60;
-    display.print (" mins");
-    display.println("");
-    display.println("");
-    display.println("http://funnytech.atwebpages.com/tms/ for live data!");
     display.display();
        
   } else {
@@ -242,18 +220,15 @@ void loop() {
     display.print (month(t));
     display.print ("/");
     display.println (year(t));
-    //display.display();
     display.println("");
-    
-    display.println(" -- External -- ");
     display.println("Tmp:" +  String(tempEx) + "C" );
     display.println("Hum:" + String(humEx)  + "%" );
     display.println("");
     display.println("Upload inter:" + String(uploadInterval) + (" mins.") );
-    //display.println(" -- Internal -- ");
-    //display.println("Tmp:" +  String(tempIn) + "C" );
-    //display.println("Hum:" + String(humIn)  + "%" );
+    //display.print ("NExt upload in:");
+    //int intervallDisplay = ((((interval-(currentMillis-previousMillis))/1000)/60)/60);
+    //display.print (String(intervallDisplay));
+    //display.println(" mins.");
     display.display();
-    //display.setTextSize(1);
   }
 }
