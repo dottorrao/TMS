@@ -16,7 +16,7 @@ const char* ssid = "Ruggeri-Senesi WIFI 2.4";//type your ssid
 const char* pass = "12MaMaLoreChia12";//type your password
 int status = WL_IDLE_STATUS;
 int uploadInterval = 0;
-//================================== 
+//===========================================================
 
 //========= CONSTANT ===========================================
 #define OLED_RESET LED_BUILTIN    // 4 - for LCD
@@ -26,13 +26,14 @@ const int BUTTONPINA = 16;        // PIN for button A
 const int BUTTONPINB = 0;         // PIN for button B
 //===============================================================
 
-//========= DEFINE OBJECTS ======================================
+//========= DEFINE OBJECTS ============================================================
 DHT dht(DHTPIN, DHTTYPE);             // Initialize DHT sensor for normal 16mhz Arduino
 Adafruit_SSD1306 display(OLED_RESET); // Initialize the LCD
 WiFiServer server(80);                // Initialize the server
 WiFiClient client;                    // Initialize the client
-//===============================================================
+//=====================================================================================
 
+//========== DEFINR VARIABLE ==========================================================
 float humEx;    //Stores external humidity value
 float tempEx;   //Stores external temperature value
 float humIn;    //Stores internal humidity value
@@ -43,42 +44,83 @@ unsigned long previousMillis = 0;  // last time update
 long interval = 0;                 // interval at which to do something (milliseconds)
 int buttonStateA = 0;              // variable for reading the pushbutton A status 
 int buttonStateB = 0;              // variable for reading the pushbutton B status
+//===================================================================================== 
+
+
+// ===========================================================================================
+// FUNCTION
+// ===========================================================================================
+
+//WELCOME DISPLAY MESSAGE
+void welcomeMessage(){
+  display.clearDisplay();
+  display.setTextColor(BLACK, WHITE);
+  display.setCursor(0,0);
+  display.println("* * * * * * * * * * *");
+  display.println("                     ");
+  display.println("     METEO STATION   ");
+  display.println("       STARTING      ");
+  display.println("        DEVICE       ");
+  display.println("                     ");
+  display.println("/ / / / / / / / / / /");
+  display.println("* * * * * * * * * * *");
+  display.display();
+  delay(5000);
+  display.setTextColor(WHITE);
+}
+
+//TO UPLOAD DATA ONLINE
+void uploadData(){
+  data = "temp1=" + String(tempEx) + "&hum1=" + String(humEx);
+  Serial.println("Sending data to server: " + String(data) );
+  Serial.println ( "Server connection: " + String (client.connect("funnytech.atwebpages.com",80)) );
+  if (client.connect("funnytech.atwebpages.com",80)) {
+    Serial.println("Data sending...");
+    client.println("POST /tms/add.php HTTP/1.1"); 
+    client.println("Host: funnytech.atwebpages.com"); // SERVER ADDRESS HERE TOO
+    client.println("Content-Type: application/x-www-form-urlencoded"); 
+    client.print("Content-Length: "); 
+    client.println(data.length()); 
+    client.println(); 
+    client.print(data); 
+    Serial.println("Data sent...");
+  }
+  // client disconnection
+  if (client.connected()) { 
+    client.stop();  // DISCONNECT FROM THE SERVER
+  }
+}
+
+// ===========================================================================================
+// ===========================================================================================
+
 
 void setup() {
 
    // initialize clock
   setSyncProvider(RTC.get);
   
-  // inizialize button pin
+  // ==== inizialize button pin =======================
+  // button a is to upload immediately data on line
+  // button b is to switch display
   pinMode(BUTTONPINA, INPUT);
   pinMode(BUTTONPINB, INPUT);
+  // ==================================================
   
   // initialize serial:
   Serial.begin(115200);
-  //delay(10);
   
-  // initialize display
+  // ===== initialize display ===============
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   // Clear the buffer display
   display.clearDisplay();
   display.display();
   display.setTextSize(1);
-  display.setTextColor(WHITE);
+  // ========================================
 
-  
-  display.clearDisplay();
-  display.setCursor(0,0);
-  display.println("* * * * * * * * * *");
-  display.println("");
-  display.println("*  METEO STATION  *");
-  display.println("     STARTING      ");
-  display.println("      DEVICE       ");
-  display.println("        **         ");
-  display.println("/ / / / / / / / / /");
-  display.println("* * * * * * * * * *");
-  display.display();
-  delay(5000);
-  
+  welcomeMessage();
+
+  // ==== Connection to home wifi ============================
   display.clearDisplay();
   display.setCursor(0,0);
   Serial.println("Attempting to connect to WPA network: ");
@@ -98,14 +140,12 @@ void setup() {
   }
   Serial.println("");
   Serial.println("WiFi connected!");
-
-  //display.setCursor(0,0);
-  //display.clearDisplay();
   
   display.println("");
   display.println("WiFi connected!");
   display.display();
   delay(4000);
+  // ==========================================================
   
   // Start the server
   server.begin();
@@ -123,32 +163,11 @@ void setup() {
   display.println("Connected to SSID: ");
   display.println(ssid);
   display.println("");
-  display.print("With id:");
+  display.print("With IP:");
   display.println(WiFi.localIP());
   //display the STARTUP information
   display.display();
   delay(4000);
-}
-
-void uploadData(){
-  data = "temp1=" + String(tempEx) + "&hum1=" + String(humEx);
-  Serial.println("Sending data to server: " + String(data) );
-  Serial.println ( "Server connection: " + String (client.connect("funnytech.atwebpages.com",80)) );
-  if (client.connect("funnytech.atwebpages.com",80)) { // REPLACE WITH YOUR SERVER ADDRESS
-    Serial.println("Data sending...");
-    client.println("POST /tms/add.php HTTP/1.1"); 
-    client.println("Host: funnytech.atwebpages.com"); // SERVER ADDRESS HERE TOO
-    client.println("Content-Type: application/x-www-form-urlencoded"); 
-    client.print("Content-Length: "); 
-    client.println(data.length()); 
-    client.println(); 
-    client.print(data); 
-    Serial.println("Data sent...");
-  }
-  // client disconnection
-  if (client.connected()) { 
-    client.stop();  // DISCONNECT FROM THE SERVER
-  }
 }
 
 
@@ -200,19 +219,22 @@ void loop() {
     display.setTextSize(1);
     display.print ("Device IP: ");
     display.println (WiFi.localIP());
+    display.println ("");
+    display.println ("Additional space to add information");
     display.display();
        
   } else {
    
     display.clearDisplay();
-    //display.display();
     display.setTextSize(1);
     display.setTextColor(WHITE);
     display.setCursor(0,0);
 
-    time_t t = now();                  
+    time_t t = now();
+    if ( String(hour(t)).length() == 1 ) display.print ("0");
     display.print (hour(t));
     display.print (":");
+    if ( String(minute(t)).length() == 1 ) display.print ("0"); 
     display.print (minute(t));
     display.print (" - ");
     display.print (day(t));
@@ -225,10 +247,6 @@ void loop() {
     display.println("Hum:" + String(humEx)  + "%" );
     display.println("");
     display.println("Upload inter:" + String(uploadInterval) + (" mins.") );
-    //display.print ("NExt upload in:");
-    //int intervallDisplay = ((((interval-(currentMillis-previousMillis))/1000)/60)/60);
-    //display.print (String(intervallDisplay));
-    //display.println(" mins.");
     display.display();
   }
 }
