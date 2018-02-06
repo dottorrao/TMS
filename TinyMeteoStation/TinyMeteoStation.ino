@@ -12,8 +12,8 @@
 //================================== 
 
 //========= WIFI SID/PASSWORD ===============================
-const char* ssid = "Ruggeri-Senesi WIFI 2.4";//type your ssid
-const char* pass = "12MaMaLoreChia12";//type your password
+const char* ssid = "SSID_HERE";//type your ssid
+const char* pass = "PASSWORD_HERE";//type your password
 int status = WL_IDLE_STATUS;
 //================================== 
 
